@@ -100,7 +100,7 @@ export class GA4 {
         label: string;
     }, hitCallback: Function): void;
 }
-declare var _default: GA4;
+declare const _default: GA4;
 export default _default;
 export type GaOptions = {
     cookieUpdate?: boolean;
