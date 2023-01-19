@@ -50,14 +50,12 @@ export class GA4 {
      *
      * @param {InitOptions[]|string} GA_MEASUREMENT_ID
      * @param {Object} [options]
-     * @param {boolean} [options.legacyDimensionMetric=true]
      * @param {string} [options.nonce]
      * @param {boolean} [options.testMode=false]
      * @param {GaOptions|any} [options.gaOptions]
      * @param {Object} [options.gtagOptions] New parameter
      */
     initialize: (GA_MEASUREMENT_ID: InitOptions[] | string, options?: {
-        legacyDimensionMetric?: boolean;
         nonce?: string;
         testMode?: boolean;
         gaOptions?: GaOptions | any;
@@ -80,25 +78,6 @@ export class GA4 {
      */
     event: (optionsOrName: UaEventOptions | string, params?: any) => void;
     send: (fieldObject: any) => void;
-    _appendCustomMap(options: any, legacyDimensionMetric?: boolean): any;
-    /**
-     * @since v1.0.2
-     * @param {string} [path="location.href"]
-     * @param {string[]} [_] unsupported
-     * @param {string} [title="location.pathname"]
-     * @deprecated Use `.send("pageview")` instead
-     */
-    pageview: (path?: string, _?: string[], title?: string) => void;
-    /**
-     * @since v1.0.6
-     * @param {Object} options
-     * @param {string} options.label
-     * @param {function} hitCallback
-     * @deprecated Use `enhanced measurement` feature in Google Analytics.
-     */
-    outboundLink({ label }: {
-        label: string;
-    }, hitCallback: Function): void;
 }
 declare const _default: GA4;
 export default _default;

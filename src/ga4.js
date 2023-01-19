@@ -151,7 +151,6 @@ export class GA4 {
    *
    * @param {InitOptions[]|string} GA_MEASUREMENT_ID
    * @param {Object} [options]
-   * @param {boolean} [options.legacyDimensionMetric=true]
    * @param {string} [options.nonce]
    * @param {boolean} [options.testMode=false]
    * @param {GaOptions|any} [options.gaOptions]
@@ -168,13 +167,7 @@ export class GA4 {
         : GA_MEASUREMENT_ID;
 
     this._currentMeasurementId = initConfigs[0].trackingId;
-    const {
-      gaOptions,
-      gtagOptions,
-      legacyDimensionMetric = true,
-      nonce,
-      testMode = false,
-    } = options;
+    const { gaOptions, gtagOptions, nonce, testMode = false } = options;
     this._testMode = testMode;
 
     if (!testMode) {
@@ -184,16 +177,13 @@ export class GA4 {
       this._gtag("js", new Date());
 
       initConfigs.forEach((config) => {
-        const mergedGtagOptions = this._appendCustomMap(
-          {
-            // https://developers.google.com/analytics/devguides/collection/gtagjs/pages#disable_pageview_measurement
-            send_page_view: false, // default true, but React GA had false before.
-            ...this._toGtagOptions({ ...gaOptions, ...config.gaOptions }),
-            ...gtagOptions,
-            ...config.gtagOptions,
-          },
-          legacyDimensionMetric
-        );
+        const mergedGtagOptions = {
+          // https://developers.google.com/analytics/devguides/collection/gtagjs/pages#disable_pageview_measurement
+          send_page_view: false, // default true, but React GA had false before.
+          ...this._toGtagOptions({ ...gaOptions, ...config.gaOptions }),
+          ...gtagOptions,
+          ...config.gtagOptions,
+        };
         this._gtag("config", config.trackingId, mergedGtagOptions);
       });
     }
@@ -403,15 +393,8 @@ export class GA4 {
     if (typeof optionsOrName === "string") {
       this._gtag("event", optionsOrName, this._toGtagOptions(params));
     } else {
-      const {
-        action,
-        category,
-        label,
-        value,
-        nonInteraction,
-        transport,
-        ...rest
-      } = optionsOrName;
+      const { action, category, label, value, nonInteraction, transport } =
+        optionsOrName;
       if (!category || !action) {
         console.warn("args.category AND args.action are required in event()");
 
@@ -460,18 +443,6 @@ export class GA4 {
         }
       }
 
-      Object.keys(rest)
-        .filter((key) => key.substr(0, "dimension".length) === "dimension")
-        .forEach((key) => {
-          fieldObject[key] = rest[key];
-        });
-
-      Object.keys(rest)
-        .filter((key) => key.substr(0, "metric".length) === "metric")
-        .forEach((key) => {
-          fieldObject[key] = rest[key];
-        });
-
       this._gaCommand("send", fieldObject);
     }
   };
@@ -479,98 +450,6 @@ export class GA4 {
   send = (fieldObject) => {
     this._gaCommand("send", fieldObject);
   };
-
-  _appendCustomMap(options, legacyDimensionMetric = true) {
-    if (!legacyDimensionMetric) {
-      return options;
-    }
-
-    if (!options.custom_map) {
-      options.custom_map = {};
-    }
-
-    for (let i = 1; i <= 200; i++) {
-      if (!options.custom_map[`dimension${i}`]) {
-        options.custom_map[`dimension${i}`] = `dimension${i}`;
-      }
-      if (!options.custom_map[`metric${i}`]) {
-        options.custom_map[`metric${i}`] = `metric${i}`;
-      }
-    }
-
-    return options;
-  }
-
-  /**
-   * @since v1.0.2
-   * @param {string} [path="location.href"]
-   * @param {string[]} [_] unsupported
-   * @param {string} [title="location.pathname"]
-   * @deprecated Use `.send("pageview")` instead
-   */
-  pageview = (path, _, title) => {
-    const pathTrim = path?.trim();
-    if (pathTrim === "") {
-      console.warn("path cannot be an empty string in .pageview()");
-      return;
-    }
-
-    this._gaCommand("send", "pageview", pathTrim, { title });
-  };
-
-  /**
-   * @since v1.0.6
-   * @param {Object} options
-   * @param {string} options.label
-   * @param {function} hitCallback
-   * @deprecated Use `enhanced measurement` feature in Google Analytics.
-   */
-  outboundLink({ label }, hitCallback) {
-    if (typeof hitCallback !== "function") {
-      console.warn("hitCallback function is required");
-      return;
-    }
-
-    if (!label) {
-      console.warn("args.label is required in outboundLink()");
-      return;
-    }
-
-    // Required Fields
-    const fieldObject = {
-      hitType: "event",
-      eventCategory: "Outbound",
-      eventAction: "Click",
-      eventLabel: format(label),
-    };
-
-    let safetyCallbackCalled = false;
-    const safetyCallback = () => {
-      // This prevents a delayed response from GA
-      // causing hitCallback from being fired twice
-      safetyCallbackCalled = true;
-
-      hitCallback();
-    };
-
-    // Using a timeout to ensure the execution of critical application code
-    // in the case when the GA server might be down
-    // or an ad blocker prevents sending the data
-
-    // register safety net timeout:
-    const t = setTimeout(safetyCallback, 250);
-
-    const clearableCallbackForGA = () => {
-      clearTimeout(t);
-      if (!safetyCallbackCalled) {
-        hitCallback();
-      }
-    };
-
-    fieldObject.hitCallback = clearableCallbackForGA;
-
-    this._gaCommand("send", fieldObject);
-  }
 }
 
 export default new GA4();

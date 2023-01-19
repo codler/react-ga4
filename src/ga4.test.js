@@ -1,6 +1,5 @@
 import gtag from "./gtag";
 import GA4 from "./ga4";
-import { givenCustomMap } from "./ga4.mock";
 
 const newDate = new Date("2020-01-01");
 jest.mock("./gtag");
@@ -23,7 +22,6 @@ describe("GA4", () => {
       // Then
       expect(gtag).toHaveBeenNthCalledWith(1, "js", newDate);
       expect(gtag).toHaveBeenNthCalledWith(2, "config", GA_MEASUREMENT_ID, {
-        custom_map: givenCustomMap,
         send_page_view: false,
       });
       expect(gtag).toHaveBeenCalledTimes(2);
@@ -43,7 +41,6 @@ describe("GA4", () => {
       // Then
       expect(gtag).toHaveBeenNthCalledWith(1, "js", newDate);
       expect(gtag).toHaveBeenNthCalledWith(2, "config", GA_MEASUREMENT_ID, {
-        custom_map: givenCustomMap,
         send_page_view: false,
         cookie_update: false,
       });
@@ -80,11 +77,9 @@ describe("GA4", () => {
       // Then
       expect(gtag).toHaveBeenNthCalledWith(1, "js", newDate);
       expect(gtag).toHaveBeenNthCalledWith(2, "config", GA_MEASUREMENT_ID, {
-        custom_map: givenCustomMap,
         send_page_view: false,
       });
       expect(gtag).toHaveBeenNthCalledWith(3, "config", GA_MEASUREMENT_ID2, {
-        custom_map: givenCustomMap,
         send_page_view: false,
       });
       expect(gtag).toHaveBeenCalledTimes(3);
@@ -266,35 +261,6 @@ describe("GA4", () => {
         non_interaction: true,
       });
     });
-
-    it("event() with dimensions and metrics", () => {
-      // Given
-      const object = {
-        category: "category value",
-        action: "action value",
-        label: "label value",
-        nonInteraction: true,
-        id: "id value", // id doesnt exist in event
-        value: 0,
-        dimension2: "dimension2 value",
-        dimension4: "dimension4 value",
-        metric2: "metric2 value",
-      };
-
-      // When
-      GA4.event(object);
-
-      // Then
-      expect(gtag).toHaveBeenNthCalledWith(1, "event", "Action Value", {
-        event_category: "Category Value",
-        event_label: "Label Value",
-        non_interaction: true,
-        dimension2: "dimension2 value",
-        dimension4: "dimension4 value",
-        metric2: "metric2 value",
-        value: 0,
-      });
-    });
   });
 
   describe("GA4.set()", () => {
@@ -303,8 +269,6 @@ describe("GA4", () => {
       const object = {
         anonymizeIp: true,
         referrer: "/signup",
-        dimension2: "dimension2 value",
-        dimension3: undefined,
         allowAdFeatures: "allowAdFeatures value",
         allowAdPersonalizationSignals: "allowAdPersonalizationSignals value",
         page: "/home",
@@ -317,64 +281,10 @@ describe("GA4", () => {
       expect(gtag).toHaveBeenNthCalledWith(1, "set", {
         anonymize_ip: true,
         referrer: "/signup",
-        dimension2: "dimension2 value",
         allow_google_signals: "allowAdFeatures value",
         allow_ad_personalization_signals: "allowAdPersonalizationSignals value",
         page_path: "/home",
       });
-
-      expect(Object.keys(gtag.mock.calls[0][1])).toContain("dimension3");
-    });
-  });
-
-  describe("GA4.pageview()", () => {
-    it("pageview()", () => {
-      // Given
-      const path = "/location-pathname";
-      const title = "title value";
-
-      // When
-      GA4.pageview(path, undefined, title);
-
-      // Then
-      expect(gtag).toHaveBeenNthCalledWith(1, "event", "page_view", {
-        page_title: title,
-        page_path: path,
-      });
-    });
-  });
-
-  describe("GA4.outboundLink()", () => {
-    function outboundLinkTest(givenTimeout) {
-      // Given
-      const label = "label value";
-      gtag.mockImplementationOnce((command, event_name, event_params) => {
-        setTimeout(() => event_params.event_callback(), givenTimeout);
-      });
-      const callback = jest.fn(() => {});
-
-      // When
-      GA4.outboundLink({ label }, callback);
-
-      // Then
-      expect(gtag).toHaveBeenNthCalledWith(1, "event", "Click", {
-        event_category: "Outbound",
-        event_label: "Label Value",
-        event_callback: expect.any(Function),
-      });
-      expect(callback).toHaveBeenCalledTimes(0);
-
-      jest.runAllTimers();
-
-      expect(callback).toHaveBeenCalledTimes(1);
-    }
-
-    it("outboundLink() before 250ms timeout", () => {
-      outboundLinkTest(100);
-    });
-
-    it("outboundLink() after 250ms timeout", () => {
-      outboundLinkTest(300);
     });
   });
 
