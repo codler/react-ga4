@@ -178,13 +178,15 @@ export class GA4 {
 
       initConfigs.forEach((config) => {
         const mergedGtagOptions = {
-          // https://developers.google.com/analytics/devguides/collection/gtagjs/pages#disable_pageview_measurement
-          send_page_view: false, // default true, but React GA had false before.
           ...this._toGtagOptions({ ...gaOptions, ...config.gaOptions }),
           ...gtagOptions,
           ...config.gtagOptions,
         };
-        this._gtag("config", config.trackingId, mergedGtagOptions);
+        if (Object.keys(mergedGtagOptions).length) {
+          this._gtag("config", config.trackingId, mergedGtagOptions);
+        } else {
+          this._gtag("config", config.trackingId);
+        }
       });
     }
     this.isInitialized = true;

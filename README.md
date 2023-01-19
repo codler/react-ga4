@@ -3,7 +3,7 @@
 ## Migrate from old react-ga
 
 ```js
-// Simply replace `react-ga` with `react-ga4`
+// Simply replace `react-ga` with `react-ga4` and remove `ReactGA.pageview()`
 // import ReactGA from "react-ga";
 import ReactGA from "react-ga4";
 ```
@@ -20,7 +20,6 @@ npm i react-ga4
 import ReactGA from "react-ga4";
 
 ReactGA.initialize("your GA measurement id");
-ReactGA.send("pageview");
 ```
 
 ## Example

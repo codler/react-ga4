@@ -21,9 +21,7 @@ describe("GA4", () => {
 
       // Then
       expect(gtag).toHaveBeenNthCalledWith(1, "js", newDate);
-      expect(gtag).toHaveBeenNthCalledWith(2, "config", GA_MEASUREMENT_ID, {
-        send_page_view: false,
-      });
+      expect(gtag).toHaveBeenNthCalledWith(2, "config", GA_MEASUREMENT_ID);
       expect(gtag).toHaveBeenCalledTimes(2);
     });
 
@@ -41,7 +39,6 @@ describe("GA4", () => {
       // Then
       expect(gtag).toHaveBeenNthCalledWith(1, "js", newDate);
       expect(gtag).toHaveBeenNthCalledWith(2, "config", GA_MEASUREMENT_ID, {
-        send_page_view: false,
         cookie_update: false,
       });
       expect(gtag).toHaveBeenCalledTimes(2);
@@ -76,12 +73,8 @@ describe("GA4", () => {
 
       // Then
       expect(gtag).toHaveBeenNthCalledWith(1, "js", newDate);
-      expect(gtag).toHaveBeenNthCalledWith(2, "config", GA_MEASUREMENT_ID, {
-        send_page_view: false,
-      });
-      expect(gtag).toHaveBeenNthCalledWith(3, "config", GA_MEASUREMENT_ID2, {
-        send_page_view: false,
-      });
+      expect(gtag).toHaveBeenNthCalledWith(2, "config", GA_MEASUREMENT_ID);
+      expect(gtag).toHaveBeenNthCalledWith(3, "config", GA_MEASUREMENT_ID2);
       expect(gtag).toHaveBeenCalledTimes(3);
     });
   });
