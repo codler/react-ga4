@@ -1,6 +1,6 @@
 {
   "name": "react-ga4",
-  "version": "1.4.1",
+  "version": "2.0.0",
   "description": "React Google Analytics 4",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
