@@ -40,7 +40,7 @@ ReactGA.initialize([
 ]);
 
 // Send pageview with a custom path
-ReactGA.send({ hitType: "pageview", page: "/my-path" });
+ReactGA.send({ hitType: "pageview", page: "/my-path", title: "Custom Title" });
 
 // Send a custom event
 ReactGA.event({
