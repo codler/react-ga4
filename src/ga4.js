@@ -78,7 +78,11 @@ export class GA4 {
     this._gtag(...args);
   }
 
-  _loadGA = (GA_MEASUREMENT_ID, nonce) => {
+  _loadGA = (
+    GA_MEASUREMENT_ID,
+    nonce,
+    gtagUrl = "https://www.googletagmanager.com/gtag/js"
+  ) => {
     if (typeof window === "undefined" || typeof document === "undefined") {
       return;
     }
@@ -87,7 +91,7 @@ export class GA4 {
       // Global Site Tag (gtag.js) - Google Analytics
       const script = document.createElement("script");
       script.async = true;
-      script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+      script.src = `${gtagUrl}?id=${GA_MEASUREMENT_ID}`;
       if (nonce) {
         script.setAttribute("nonce", nonce);
       }
@@ -153,6 +157,7 @@ export class GA4 {
    * @param {Object} [options]
    * @param {string} [options.nonce]
    * @param {boolean} [options.testMode=false]
+   * @param {string} [options.gtagUrl=https://www.googletagmanager.com/gtag/js]
    * @param {GaOptions|any} [options.gaOptions]
    * @param {Object} [options.gtagOptions] New parameter
    */
@@ -167,11 +172,17 @@ export class GA4 {
         : GA_MEASUREMENT_ID;
 
     this._currentMeasurementId = initConfigs[0].trackingId;
-    const { gaOptions, gtagOptions, nonce, testMode = false } = options;
+    const {
+      gaOptions,
+      gtagOptions,
+      nonce,
+      testMode = false,
+      gtagUrl,
+    } = options;
     this._testMode = testMode;
 
     if (!testMode) {
-      this._loadGA(this._currentMeasurementId, nonce);
+      this._loadGA(this._currentMeasurementId, nonce, gtagUrl);
     }
     if (!this.isInitialized) {
       this._gtag("js", new Date());

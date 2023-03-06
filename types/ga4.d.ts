@@ -44,7 +44,7 @@ export class GA4 {
     _queueGtag: any[];
     _gtag: (...args: any[]) => void;
     gtag(...args: any[]): void;
-    _loadGA: (GA_MEASUREMENT_ID: any, nonce: any) => void;
+    _loadGA: (GA_MEASUREMENT_ID: any, nonce: any, gtagUrl?: string) => void;
     _toGtagOptions: (gaOptions: any) => {};
     /**
      *
@@ -52,12 +52,14 @@ export class GA4 {
      * @param {Object} [options]
      * @param {string} [options.nonce]
      * @param {boolean} [options.testMode=false]
+     * @param {string} [options.gtagUrl=https://www.googletagmanager.com/gtag/js]
      * @param {GaOptions|any} [options.gaOptions]
      * @param {Object} [options.gtagOptions] New parameter
      */
     initialize: (GA_MEASUREMENT_ID: InitOptions[] | string, options?: {
         nonce?: string;
         testMode?: boolean;
+        gtagUrl?: string;
         gaOptions?: GaOptions | any;
         gtagOptions?: any;
     }) => void;
