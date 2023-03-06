@@ -62,6 +62,7 @@ ReactGA.event({
 | GA_MEASUREMENT_ID   | `string` Required                                                                                                       |
 | options.nonce       | `string` Optional Used for Content Security Policy (CSP) [more](https://developers.google.com/tag-manager/web/csp)      |
 | options.testMode    | `boolean` Default false                                                                                                 |
+| options.gaAddress   | `string` Optional If you are self-hosting your `gtag.js`, you can specify the URL for it here.                          |
 | options.gaOptions   | `object` Optional [Reference](https://developers.google.com/analytics/devguides/collection/analyticsjs/field-reference) |
 | options.gtagOptions | `object` Optional                                                                                                       |
 
