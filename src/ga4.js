@@ -406,7 +406,7 @@ export class GA4 {
     if (typeof optionsOrName === "string") {
       this._gtag("event", optionsOrName, this._toGtagOptions(params));
     } else {
-      const { action, category, label, value, nonInteraction, transport } =
+      const { action, category, label, value, nonInteraction, transport, ...rest } =
         optionsOrName;
       if (!category || !action) {
         console.warn("args.category AND args.action are required in event()");
@@ -419,6 +419,7 @@ export class GA4 {
         hitType: "event",
         eventCategory: format(category),
         eventAction: format(action),
+        ...rest,
       };
 
       // Optional Fields

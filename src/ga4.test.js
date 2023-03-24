@@ -242,6 +242,7 @@ describe("GA4", () => {
         action: "action value",
         label: "label value",
         nonInteraction: true,
+        customDimension: 'userId',
       };
 
       // When
@@ -252,6 +253,7 @@ describe("GA4", () => {
         event_category: "Category Value",
         event_label: "Label Value",
         non_interaction: true,
+        customDimension: 'userId',
       });
     });
   });
