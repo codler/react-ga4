@@ -132,9 +132,9 @@ export type UaEventOptions = {
 };
 
 export type ItemOptions = {
-  item_name: string;
-  item_category: string;
-  item_id: string;
+  item_name?: string;
+  item_category?: string;
+  item_id?: string;
   price: number;
   affiliation?: string;
   quantity: number;
