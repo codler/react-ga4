@@ -8,6 +8,7 @@
     "build": "NODE_ENV=production babel src -d dist",
     "postbuild": "tsc src/index.js --declaration --allowJs --emitDeclarationOnly --outDir types",
     "prepublishOnly": "npm run build && npm test",
+    "prepare": "npm run build && npm test",
     "test": "NODE_ENV=test jest"
   },
   "author": "Han Lin Yap (https://yap.nu)",
