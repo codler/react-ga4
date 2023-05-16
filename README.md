@@ -63,7 +63,7 @@ ReactGA.event({
 | options.nonce       | `string` Optional Used for Content Security Policy (CSP) [more](https://developers.google.com/tag-manager/web/csp)      |
 | options.testMode    | `boolean` Default false                                                                                                 |
 | options.gtagUrl     | `string` Default `https://www.googletagmanager.com/gtag/js`                                                             |
-| options.gaOptions   | `object` Optional [Reference](https://developers.google.com/analytics/devguides/collection/analyticsjs/field-reference) |
+| options.gaOptions   | `object` Optional [Reference](https://developers.google.com/analytics/devguides/collection/gtagjs/cookies-user-id#cookie_update) |
 | options.gtagOptions | `object` Optional                                                                                                       |
 
 #### ReactGA.set(fieldsObject)
