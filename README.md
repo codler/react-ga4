@@ -1,3 +1,15 @@
+# ✨ Looking for sponsors! ✨
+
+Maintainer need help with sponsor!
+
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/sponsors/codler"><img src="https://avatars.githubusercontent.com/u/102052?v=4&s=100" width="100px;" alt="Han Lin Yap"/><br /><sub><b>Han Lin Yap</b></sub></a><br /><a href="#maintenance-jakebolam" title="Maintenance">🚧</a></td>
+    </tr>
+  </tbody>
+</table>
+
 # React Google Analytics 4
 
 ## Migrate from old react-ga
