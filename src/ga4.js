@@ -95,7 +95,7 @@ export class GA4 {
       if (nonce) {
         script.setAttribute("nonce", nonce);
       }
-      document.body.appendChild(script);
+      document.head.appendChild(script);
 
       window.dataLayer = window.dataLayer || [];
       window.gtag = function gtag() {
