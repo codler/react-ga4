@@ -279,6 +279,25 @@ describe("GA4", () => {
         page_path: "/home",
       });
     });
+
+    it("set() with additional params", () => {
+      // Given
+      const object = ['user_properties', {
+        favorite_composer: 'Mahler',
+        favorite_instrument: 'double bass',
+        season_ticketholder: 'true'
+      }];
+
+      // When
+      GA4.set(...object);
+
+      // Then
+      expect(gtag).toHaveBeenNthCalledWith(1, "set", "user_properties", {
+        favorite_composer: 'Mahler',
+        favorite_instrument: 'double bass',
+        season_ticketholder: 'true'
+      });
+    });
   });
 
   describe("Reference", () => {
