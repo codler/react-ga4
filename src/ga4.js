@@ -177,9 +177,11 @@ export class GA4 {
       gtagOptions,
       nonce,
       testMode = false,
+      titleCase = true,
       gtagUrl,
     } = options;
     this._testMode = testMode;
+    this._titleCase = titleCase;
 
     if (!testMode) {
       this._loadGA(this._currentMeasurementId, nonce, gtagUrl);
@@ -417,13 +419,13 @@ export class GA4 {
       // Required Fields
       const fieldObject = {
         hitType: "event",
-        eventCategory: format(category),
-        eventAction: format(action),
+        eventCategory: format(category, this._titleCase),
+        eventAction: format(action, this._titleCase),
       };
 
       // Optional Fields
       if (label) {
-        fieldObject.eventLabel = format(label);
+        fieldObject.eventLabel = format(label, this._titleCase);
       }
 
       if (typeof value !== "undefined") {
