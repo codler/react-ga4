@@ -60,6 +60,50 @@ describe("GA4", () => {
       expect(gtag).toHaveBeenCalledTimes(0);
     });
 
+    it("initialize() with default titleCase true", () => {
+      // Given
+      const options = {};
+
+      // When
+      GA4.initialize(GA_MEASUREMENT_ID, options);
+      GA4.event({
+        action: "action_name",
+        category: "category_name",
+        label: "label_name",
+      });
+
+      // Then
+      expect(gtag).toHaveBeenNthCalledWith(1, "js", newDate);
+      expect(gtag).toHaveBeenNthCalledWith(2, "config", GA_MEASUREMENT_ID);
+      expect(gtag).toHaveBeenNthCalledWith(3, "event", "Action_name", {
+        "event_category": "Category_name",
+        "event_label": "Label_name",
+      });
+    });
+
+    it("initialize() with titleCase false", () => {
+      // Given
+      const options = {
+        titleCase: false,
+      };
+
+      // When
+      GA4.initialize(GA_MEASUREMENT_ID, options);
+      GA4.event({
+        action: "action_name",
+        category: "category_name",
+        label: "label_name",
+      });
+
+      // Then
+      expect(gtag).toHaveBeenNthCalledWith(1, "js", newDate);
+      expect(gtag).toHaveBeenNthCalledWith(2, "config", GA_MEASUREMENT_ID);
+      expect(gtag).toHaveBeenNthCalledWith(3, "event", "action_name", {
+        "event_category": "category_name",
+        "event_label": "label_name",
+      });
+    });
+
     it("initialize() multiple products", () => {
       // Given
       const GA_MEASUREMENT_ID2 = "GA_MEASUREMENT_ID2";
