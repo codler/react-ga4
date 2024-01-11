@@ -1,5 +1,5 @@
 import gtag from "./gtag";
-import GA4 from "./ga4";
+import GA4, { GA4 as GA4Implementation} from "./ga4";
 
 const newDate = new Date("2020-01-01");
 jest.mock("./gtag");
@@ -249,6 +249,81 @@ describe("GA4", () => {
 
       // Then
       expect(gtag).toHaveBeenNthCalledWith(1, "event", "Action Value", {
+        event_category: "Category Value",
+        event_label: "Label Value",
+        non_interaction: true,
+      });
+    });
+
+    it("event() with formatting options", () => {
+      // Given
+      const object = {
+        category: "category value",
+        action: "action value",
+        label: "label value",
+        nonInteraction: true,
+      };
+      const options = {
+        titleCase: false,
+        redactingEmail: false,
+      };
+
+      // When
+      GA4.event(object, undefined, options);
+
+      // Then
+      expect(gtag).toHaveBeenNthCalledWith(1, "event", "action value", {
+        event_category: "category value",
+        event_label: "label value",
+        non_interaction: true,
+      });
+    });
+
+    it("event() with global formatting options", () => {
+      // Given
+      const object = {
+        category: "category value",
+        action: "action value",
+        label: "label value",
+        nonInteraction: true,
+      };
+      const options = {
+        titleCase: false,
+        redactingEmail: false,
+      };
+
+      // When
+      const ga4 = new GA4Implementation(options);
+      ga4.initialize(GA_MEASUREMENT_ID);
+      ga4.event(object);
+
+      // Then
+      expect(gtag).toHaveBeenCalledWith("event", "action value", {
+        event_category: "category value",
+        event_label: "label value",
+        non_interaction: true,
+      });
+    });
+
+    it("event() local formatting options take precedence on global formatting options", () => {
+      // Given
+      const object = {
+        category: "category value",
+        action: "action value",
+        label: "label value",
+        nonInteraction: true,
+      };
+      const options = {
+        titleCase: false,
+      };
+
+      // When
+      const ga4 = new GA4Implementation(options);
+      ga4.initialize(GA_MEASUREMENT_ID);
+      ga4.event(object, undefined, { titleCase: true });
+
+      // Then
+      expect(gtag).toHaveBeenCalledWith("event", "Action Value", {
         event_category: "Category Value",
         event_label: "Label Value",
         non_interaction: true,
