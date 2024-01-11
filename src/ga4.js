@@ -47,8 +47,19 @@ https://developers.google.com/tag-platform/gtagjs/reference
  * @property {Object} [gtagOptions] New parameter
  */
 
+/**
+ * @typedef {Object} Options
+ * @property {boolean} [titleCase=true]
+ * @property {boolean} [redactingEmail=true]
+ */
+
 export class GA4 {
-  constructor() {
+  /**
+   * @param {Options} [options]
+   */
+  constructor(options = {}) {
+    this._titleCase = options.titleCase;
+    this._redactingEmail = options.redactingEmail;
     this.reset();
   }
 
@@ -401,8 +412,11 @@ export class GA4 {
   /**
    * @param {UaEventOptions|string} optionsOrName
    * @param {Object} [params]
+   * @param {Object} [formattingOptions]
+   * @param {boolean} [formattingOptions.titleCase]
+   * @param {boolean} [formattingOptions.redactingEmail]
    */
-  event = (optionsOrName, params) => {
+  event = (optionsOrName, params, formattingOptions) => {
     if (typeof optionsOrName === "string") {
       this._gtag("event", optionsOrName, this._toGtagOptions(params));
     } else {
@@ -414,16 +428,20 @@ export class GA4 {
         return;
       }
 
+      const shouldTitleCase = formattingOptions?.titleCase ?? this._titleCase;
+      const shouldRedactEmail =
+        formattingOptions?.redactingEmail ?? this._redactingEmail;
+
       // Required Fields
       const fieldObject = {
         hitType: "event",
-        eventCategory: format(category),
-        eventAction: format(action),
+        eventCategory: format(category, shouldTitleCase, shouldRedactEmail),
+        eventAction: format(action, shouldTitleCase, shouldRedactEmail),
       };
 
       // Optional Fields
       if (label) {
-        fieldObject.eventLabel = format(label);
+        fieldObject.eventLabel = format(label, shouldTitleCase, shouldRedactEmail);
       }
 
       if (typeof value !== "undefined") {
