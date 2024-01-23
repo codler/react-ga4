@@ -165,6 +165,7 @@ export class GA4 {
     if (!GA_MEASUREMENT_ID) {
       throw new Error("Require GA_MEASUREMENT_ID");
     }
+    this.gaPropertyId = GA_MEASUREMENT_ID;
 
     const initConfigs =
       typeof GA_MEASUREMENT_ID === "string"
@@ -298,11 +299,15 @@ export class GA4 {
         ...(title && { page_title: title }),
         ...(location && { page_location: location }),
         ...rest,
+        'send_to': this.gaPropertyId
       });
     } else if (page) {
-      this._gtag("event", "page_view", { page_path: page });
+      this._gtag("event", "page_view", { 
+        page_path: page, 
+        'send_to': this.gaPropertyId 
+      });
     } else {
-      this._gtag("event", "page_view");
+      this._gtag("event", "page_view", { 'send_to': this.gaPropertyId });
     }
   };
 
@@ -404,7 +409,10 @@ export class GA4 {
    */
   event = (optionsOrName, params) => {
     if (typeof optionsOrName === "string") {
-      this._gtag("event", optionsOrName, this._toGtagOptions(params));
+      this._gtag("event", optionsOrName, {
+        ...this._toGtagOptions(params),
+        'send_to': this.gaPropertyId
+      });
     } else {
       const { action, category, label, value, nonInteraction, transport } =
         optionsOrName;
