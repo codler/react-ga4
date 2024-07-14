@@ -26,6 +26,7 @@ https://developers.google.com/tag-platform/gtagjs/reference
  * @property {boolean} [allowAdPersonalizationSignals]
  * @property {boolean} [nonInteraction]
  * @property {string} [page]
+ * @property {boolean} [debugMode=false]
  */
 
 /**
@@ -37,6 +38,7 @@ https://developers.google.com/tag-platform/gtagjs/reference
  * @property {number} [value]
  * @property {boolean} [nonInteraction]
  * @property {('beacon'|'xhr'|'image')} [transport]
+ * @property {boolean} [debugMode=false]
  */
 
 /**
@@ -133,6 +135,7 @@ export class GA4 {
       nonInteraction: "non_interaction",
       page: "page_path",
       hitCallback: "event_callback",
+      debugMode: "debug_mode",
     };
 
     const gtagOptions = Object.entries(gaOptions).reduce(
@@ -406,7 +409,7 @@ export class GA4 {
     if (typeof optionsOrName === "string") {
       this._gtag("event", optionsOrName, this._toGtagOptions(params));
     } else {
-      const { action, category, label, value, nonInteraction, transport } =
+      const { action, category, label, value, nonInteraction, transport, debugMode } =
         optionsOrName;
       if (!category || !action) {
         console.warn("args.category AND args.action are required in event()");
@@ -453,6 +456,14 @@ export class GA4 {
           }
 
           fieldObject.transport = transport;
+        }
+      }
+
+      if (typeof debugMode !== "undefined") {
+        if (typeof debugMode !== "boolean") {
+          console.warn("`args.debugMode` must be a boolean.");
+        } else {
+          fieldObject.debugMode = debugMode; // Map debugMode to debug_mode
         }
       }
 

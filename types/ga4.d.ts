@@ -17,6 +17,7 @@
  * @property {boolean} [allowAdPersonalizationSignals]
  * @property {boolean} [nonInteraction]
  * @property {string} [page]
+ * @property {boolean} [debugMode=false]
  */
 /**
  * @typedef UaEventOptions
@@ -27,6 +28,7 @@
  * @property {number} [value]
  * @property {boolean} [nonInteraction]
  * @property {('beacon'|'xhr'|'image')} [transport]
+ * @property {boolean} [debugMode=false]
  */
 /**
  * @typedef InitOptions
@@ -103,6 +105,7 @@ export type GaOptions = {
     allowAdPersonalizationSignals?: boolean;
     nonInteraction?: boolean;
     page?: string;
+    debugMode?: boolean;
 };
 export type UaEventOptions = {
     action: string;
@@ -111,6 +114,7 @@ export type UaEventOptions = {
     value?: number;
     nonInteraction?: boolean;
     transport?: ('beacon' | 'xhr' | 'image');
+    debugMode?: boolean;
 };
 export type InitOptions = {
     trackingId: string;
