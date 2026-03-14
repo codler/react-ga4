@@ -1,5 +1,5 @@
-import gtag from "./gtag";
-import format from "./format";
+import gtag from "./gtag.js";
+import format from "./format.js";
 
 /*
 Links

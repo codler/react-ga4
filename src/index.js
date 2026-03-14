@@ -1,4 +1,4 @@
-import ga4, { GA4 } from "./ga4";
+import ga4, { GA4 } from "./ga4.js";
 
 export const ReactGAImplementation = GA4;
 

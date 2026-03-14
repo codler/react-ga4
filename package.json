@@ -2,10 +2,20 @@
   "name": "react-ga4",
   "version": "2.1.0",
   "description": "React Google Analytics 4",
-  "main": "dist/index.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
   "types": "types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
   "scripts": {
-    "build": "NODE_ENV=production babel src -d dist",
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "NODE_ENV=production babel src -d dist/cjs",
+    "build:esm": "NODE_ENV=production BABEL_ENV=esm babel src -d dist/esm",
     "postbuild": "tsc src/index.js --declaration --allowJs --emitDeclarationOnly --outDir types",
     "prepublishOnly": "npm run build && npm test",
     "test": "NODE_ENV=test jest"
