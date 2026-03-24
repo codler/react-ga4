@@ -1,16 +1,19 @@
 import gtag from "./gtag";
 import GA4 from "./ga4";
+import { vi, describe, beforeEach, it, expect, MockedFunction } from "vitest";
 
 const newDate = new Date("2020-01-01");
-jest.mock("./gtag");
-jest.useFakeTimers("modern").setSystemTime(newDate.getTime());
+vi.mock("./gtag");
+vi.useFakeTimers().setSystemTime(newDate.getTime());
+
+const mockedGtag = vi.mocked(gtag);
 
 describe("GA4", () => {
   // Given
   const GA_MEASUREMENT_ID = "GA_MEASUREMENT_ID";
 
   beforeEach(() => {
-    gtag.mockReset();
+    mockedGtag.mockReset();
     GA4.reset();
   });
 
@@ -111,73 +114,80 @@ describe("GA4", () => {
       });
     });
 
-    it("ga() callback", (done) => {
+    it("ga() callback", async () => {
       // Given
+      GA4.initialize(GA_MEASUREMENT_ID);
       const clientId = "clientId value";
-      gtag.mockImplementationOnce((command, target, field_name, cb) =>
-        cb(clientId)
+      (gtag as MockedFunction<any>).mockImplementationOnce(
+        (command: any, target: any, field_name: any, cb: any) => cb(clientId),
       );
 
-      const callback = jest.fn((tracker) => {
-        const trackerClientId = tracker.get("clientId");
-        const trackerTrackingId = tracker.get("trackingId");
-        const trackerApiVersion = tracker.get("apiVersion");
-        expect(trackerClientId).toEqual(clientId);
-        expect(trackerTrackingId).toEqual(GA_MEASUREMENT_ID);
-        expect(trackerApiVersion).toEqual("1");
-        done();
-      });
+      await new Promise<void>((resolve) => {
+        const callback = vi.fn((tracker) => {
+          const trackerClientId = tracker.get("clientId");
+          const trackerTrackingId = tracker.get("trackingId");
+          const trackerApiVersion = tracker.get("apiVersion");
+          expect(trackerClientId).toEqual(clientId);
+          expect(trackerTrackingId).toEqual(GA_MEASUREMENT_ID);
+          expect(trackerApiVersion).toEqual("1");
+          resolve();
+        });
 
-      // When
-      GA4.ga(callback);
+        // When
+        GA4.ga(callback);
+      });
 
       // Then
       expect(gtag).toHaveBeenNthCalledWith(
-        1,
+        3,
         "get",
         GA_MEASUREMENT_ID,
         "client_id",
-        expect.any(Function)
+        expect.any(Function),
       );
     });
 
-    it("ga() async callback", (done) => {
+    it("ga() async callback", async () => {
       // Given
+      GA4.initialize(GA_MEASUREMENT_ID);
       const clientId = "clientId value";
-      gtag.mockImplementationOnce((command, target, field_name, cb) =>
-        cb(clientId)
+      (gtag as MockedFunction<any>).mockImplementationOnce(
+        (command: any, target: any, field_name: any, cb: any) => cb(clientId),
       );
 
-      const callback = jest.fn(async (tracker) => {
-        const trackerClientId = tracker.get("clientId");
-        expect(trackerClientId).toEqual(clientId);
-        done();
-      });
+      await new Promise<void>((resolve) => {
+        const callback = vi.fn(async (tracker) => {
+          const trackerClientId = tracker.get("clientId");
+          expect(trackerClientId).toEqual(clientId);
+          resolve();
+        });
 
-      // When
-      GA4.ga(callback);
+        // When
+        GA4.ga(callback);
+      });
 
       // Then
       expect(gtag).toHaveBeenNthCalledWith(
-        1,
+        3,
         "get",
         GA_MEASUREMENT_ID,
         "client_id",
-        expect.any(Function)
+        expect.any(Function),
       );
     });
 
-    it("ga() callback queue", (done) => {
+    it("ga() callback queue", async () => {
       // Given
+      GA4.initialize(GA_MEASUREMENT_ID);
       const clientId = "clientId value";
-      gtag.mockImplementationOnce((command, target, field_name, cb) => {
-        setImmediate(() => cb(clientId));
-      });
+      (gtag as MockedFunction<any>).mockImplementationOnce(
+        (command: any, target: any, field_name: any, cb: any) => {
+          setTimeout(() => cb(clientId), 0);
+        },
+      );
 
-      const callback = jest.fn(() => {
+      const callback = vi.fn(() => {
         GA4.ga("send", { hitType: "pageview" });
-        expect(gtag).toHaveBeenNthCalledWith(2, "event", "page_view");
-        done();
       });
 
       // When
@@ -186,21 +196,23 @@ describe("GA4", () => {
 
       // Then
       expect(gtag).toHaveBeenNthCalledWith(
-        1,
+        3,
         "get",
         GA_MEASUREMENT_ID,
         "client_id",
-        expect.any(Function)
+        expect.any(Function),
       );
-      expect(gtag).toHaveBeenCalledTimes(1);
+      expect(gtag).toHaveBeenCalledTimes(3);
       expect(GA4._isQueuing).toBeTruthy();
       expect(GA4._queueGtag).toHaveLength(1);
 
-      jest.runAllTimers();
+      vi.runAllTimers();
 
+      expect(callback).toHaveBeenCalled();
+      expect(gtag).toHaveBeenNthCalledWith(4, "event", "page_view");
       expect(GA4._isQueuing).toBeFalsy();
       expect(GA4._queueGtag).toHaveLength(0);
-      expect(gtag).toHaveBeenNthCalledWith(3, "event", undefined, {
+      expect(gtag).toHaveBeenNthCalledWith(5, "event", undefined, {
         event_category: "category value",
       });
     });
@@ -328,7 +340,17 @@ describe("GA4", () => {
   describe("Web vitals", () => {
     it("Web vitals", () => {
       // https://github.com/GoogleChrome/web-vitals/blob/main/README.md
-      function sendToGoogleAnalytics({ name, delta, value, id }) {
+      function sendToGoogleAnalytics({
+        name,
+        delta,
+        value,
+        id,
+      }: {
+        name: any;
+        delta: any;
+        value: any;
+        id: any;
+      }) {
         GA4.send({
           hitType: "event",
           eventCategory: "Web Vitals",

@@ -7,62 +7,63 @@ https://developers.google.com/gtagjs/reference/api
 https://developers.google.com/tag-platform/gtagjs/reference
 */
 
-/**
- * @typedef GaOptions
- * @type {Object}
- * @property {boolean} [cookieUpdate=true]
- * @property {number} [cookieExpires=63072000] Default two years
- * @property {string} [cookieDomain="auto"]
- * @property {string} [cookieFlags]
- * @property {string} [userId]
- * @property {string} [clientId]
- * @property {boolean} [anonymizeIp]
- * @property {string} [contentGroup1]
- * @property {string} [contentGroup2]
- * @property {string} [contentGroup3]
- * @property {string} [contentGroup4]
- * @property {string} [contentGroup5]
- * @property {boolean} [allowAdFeatures=true]
- * @property {boolean} [allowAdPersonalizationSignals]
- * @property {boolean} [nonInteraction]
- * @property {string} [page]
- */
+export interface GaOptions {
+  cookieUpdate?: boolean; // true
+  cookieExpires?: number; // Default two years 63072000
+  cookieDomain?: string; // auto
+  cookieFlags?: string;
+  userId?: string;
+  clientId?: string;
+  anonymizeIp?: boolean;
+  contentGroup1?: string;
+  contentGroup2?: string;
+  contentGroup3?: string;
+  contentGroup4?: string;
+  contentGroup5?: string;
+  allowAdFeatures?: boolean;
+  allowAdPersonalizationSignals?: boolean;
+  nonInteraction?: boolean;
+  page?: string;
+}
 
-/**
- * @typedef UaEventOptions
- * @type {Object}
- * @property {string} action
- * @property {string} category
- * @property {string} [label]
- * @property {number} [value]
- * @property {boolean} [nonInteraction]
- * @property {('beacon'|'xhr'|'image')} [transport]
- */
+export interface UaEventOptions {
+  action: string;
+  category: string;
+  label?: string;
+  value?: number;
+  nonInteraction?: boolean;
+  transport?: 'beacon' | 'xhr' | 'image';
+}
 
-/**
- * @typedef InitOptions
- * @type {Object}
- * @property {string} trackingId
- * @property {GaOptions|any} [gaOptions]
- * @property {Object} [gtagOptions] New parameter
- */
+export interface InitOptions {
+  trackingId: string;
+  gaOptions?: GaOptions | any;
+  gtagOptions?: any; // New parameter
+}
 
 export class GA4 {
+  isInitialized!: boolean;
+  _testMode!: boolean;
+  _currentMeasurementId!: string;
+  _hasLoadedGA!: boolean;
+  _isQueuing!: boolean;
+  _queueGtag!: any[];
+
   constructor() {
     this.reset();
   }
 
-  reset = () => {
+  reset = (): void => {
     this.isInitialized = false;
 
     this._testMode = false;
-    this._currentMeasurementId;
+    this._currentMeasurementId = "";
     this._hasLoadedGA = false;
     this._isQueuing = false;
     this._queueGtag = [];
   };
 
-  _gtag = (...args) => {
+  _gtag = (...args: any[]): void => {
     if (!this._testMode) {
       if (this._isQueuing) {
         this._queueGtag.push(args);
@@ -74,15 +75,15 @@ export class GA4 {
     }
   };
 
-  gtag(...args) {
+  gtag(...args: any[]): void {
     this._gtag(...args);
   }
 
   _loadGA = (
-    GA_MEASUREMENT_ID,
-    nonce,
-    gtagUrl = "https://www.googletagmanager.com/gtag/js"
-  ) => {
+    GA_MEASUREMENT_ID: string,
+    nonce?: string,
+    gtagUrl: string = "https://www.googletagmanager.com/gtag/js"
+  ): void => {
     if (typeof window === "undefined" || typeof document === "undefined") {
       return;
     }
@@ -106,12 +107,12 @@ export class GA4 {
     }
   };
 
-  _toGtagOptions = (gaOptions) => {
+  _toGtagOptions = (gaOptions?: GaOptions): Record<string, any> | undefined => {
     if (!gaOptions) {
       return;
     }
 
-    const mapFields = {
+    const mapFields: Record<string, string> = {
       // Old https://developers.google.com/analytics/devguides/collection/analyticsjs/field-reference#cookieUpdate
       // New https://developers.google.com/analytics/devguides/collection/gtagjs/cookies-user-id#cookie_update
       cookieUpdate: "cookie_update",
@@ -145,7 +146,7 @@ export class GA4 {
 
         return prev;
       },
-      {}
+      {} as Record<string, any>
     );
 
     return gtagOptions;
@@ -161,12 +162,18 @@ export class GA4 {
    * @param {GaOptions|any} [options.gaOptions]
    * @param {Object} [options.gtagOptions] New parameter
    */
-  initialize = (GA_MEASUREMENT_ID, options = {}) => {
+  initialize = (GA_MEASUREMENT_ID: InitOptions[] | string, options: {
+    nonce?: string;
+    testMode?: boolean;
+    gtagUrl?: string;
+    gaOptions?: GaOptions | any;
+    gtagOptions?: any;
+  } = {}): void => {
     if (!GA_MEASUREMENT_ID) {
       throw new Error("Require GA_MEASUREMENT_ID");
     }
 
-    const initConfigs =
+    const initConfigs: InitOptions[] =
       typeof GA_MEASUREMENT_ID === "string"
         ? [{ trackingId: GA_MEASUREMENT_ID }]
         : GA_MEASUREMENT_ID;
@@ -216,7 +223,7 @@ export class GA4 {
     }
   };
 
-  set = (fieldsObject) => {
+  set = (fieldsObject: any): void => {
     if (!fieldsObject) {
       console.warn("`fieldsObject` is required in .set()");
 
@@ -237,12 +244,12 @@ export class GA4 {
   };
 
   _gaCommandSendEvent = (
-    eventCategory,
-    eventAction,
-    eventLabel,
-    eventValue,
-    fieldsObject
-  ) => {
+    eventCategory: string,
+    eventAction: string,
+    eventLabel?: string,
+    eventValue?: number,
+    fieldsObject?: any
+  ): void => {
     this._gtag("event", eventAction, {
       event_category: eventCategory,
       event_label: eventLabel,
@@ -252,9 +259,9 @@ export class GA4 {
     });
   };
 
-  _gaCommandSendEventParameters = (...args) => {
+  _gaCommandSendEventParameters = (...args: any[]): void => {
     if (typeof args[0] === "string") {
-      this._gaCommandSendEvent(...args.slice(1));
+      this._gaCommandSendEvent(...(args.slice(1) as [string, string, string?, number?, any?]));
     } else {
       const {
         eventCategory,
@@ -276,11 +283,11 @@ export class GA4 {
   };
 
   _gaCommandSendTiming = (
-    timingCategory,
-    timingVar,
-    timingValue,
-    timingLabel
-  ) => {
+    timingCategory: string,
+    timingVar: string,
+    timingValue: number,
+    timingLabel?: string
+  ): void => {
     this._gtag("event", "timing_complete", {
       name: timingVar,
       value: timingValue,
@@ -289,9 +296,9 @@ export class GA4 {
     });
   };
 
-  _gaCommandSendPageview = (page, fieldsObject) => {
+  _gaCommandSendPageview = (page?: string, fieldsObject?: any): void => {
     if (fieldsObject && Object.keys(fieldsObject).length) {
-      const { title, location, ...rest } = this._toGtagOptions(fieldsObject);
+      const { title, location, ...rest } = this._toGtagOptions(fieldsObject) || {};
 
       this._gtag("event", "page_view", {
         ...(page && { page_path: page }),
@@ -306,7 +313,7 @@ export class GA4 {
     }
   };
 
-  _gaCommandSendPageviewParameters = (...args) => {
+  _gaCommandSendPageviewParameters = (...args: any[]): void => {
     if (typeof args[0] === "string") {
       this._gaCommandSendPageview(...args.slice(1));
     } else {
@@ -321,7 +328,7 @@ export class GA4 {
   };
 
   // https://developers.google.com/analytics/devguides/collection/analyticsjs/command-queue-reference#send
-  _gaCommandSend = (...args) => {
+  _gaCommandSend = (...args: any[]): void => {
     const hitType = typeof args[0] === "string" ? args[0] : args[0].hitType;
 
     switch (hitType) {
@@ -332,7 +339,7 @@ export class GA4 {
         this._gaCommandSendPageviewParameters(...args);
         break;
       case "timing":
-        this._gaCommandSendTiming(...args.slice(1));
+        this._gaCommandSendTiming(...(args.slice(1) as [string, string, number, string?]));
         break;
       case "screenview":
       case "transaction":
@@ -346,14 +353,14 @@ export class GA4 {
     }
   };
 
-  _gaCommandSet = (...args) => {
+  _gaCommandSet = (...args: any[]): void => {
     if (typeof args[0] === "string") {
       args[0] = { [args[0]]: args[1] };
     }
     this._gtag("set", this._toGtagOptions(args[0]));
   };
 
-  _gaCommand = (command, ...args) => {
+  _gaCommand = (command: string, ...args: any[]): void => {
     switch (command) {
       case "send":
         this._gaCommandSend(...args);
@@ -366,17 +373,17 @@ export class GA4 {
     }
   };
 
-  ga = (...args) => {
+  ga = (...args: any[]): any => {
     if (typeof args[0] === "string") {
-      this._gaCommand(...args);
+      this._gaCommand(...(args as [string, ...any[]]));
     } else {
       const [readyCallback] = args;
-      this._gtag("get", this._currentMeasurementId, "client_id", (clientId) => {
+      this._gtag("get", this._currentMeasurementId, "client_id", (clientId: string) => {
         this._isQueuing = false;
         const queues = this._queueGtag;
 
         readyCallback({
-          get: (property) =>
+          get: (property: string) =>
             property === "clientId"
               ? clientId
               : property === "trackingId"
@@ -402,7 +409,7 @@ export class GA4 {
    * @param {UaEventOptions|string} optionsOrName
    * @param {Object} [params]
    */
-  event = (optionsOrName, params) => {
+  event = (optionsOrName: UaEventOptions | string, params?: any): void => {
     if (typeof optionsOrName === "string") {
       this._gtag("event", optionsOrName, this._toGtagOptions(params));
     } else {
@@ -423,14 +430,14 @@ export class GA4 {
 
       // Optional Fields
       if (label) {
-        fieldObject.eventLabel = format(label);
+        (fieldObject as any).eventLabel = format(label);
       }
 
       if (typeof value !== "undefined") {
         if (typeof value !== "number") {
           console.warn("Expected `args.value` arg to be a Number.");
         } else {
-          fieldObject.eventValue = value;
+          (fieldObject as any).eventValue = value;
         }
       }
 
@@ -438,7 +445,7 @@ export class GA4 {
         if (typeof nonInteraction !== "boolean") {
           console.warn("`args.nonInteraction` must be a boolean.");
         } else {
-          fieldObject.nonInteraction = nonInteraction;
+          (fieldObject as any).nonInteraction = nonInteraction;
         }
       }
 
@@ -452,7 +459,7 @@ export class GA4 {
             );
           }
 
-          fieldObject.transport = transport;
+          (fieldObject as any).transport = transport;
         }
       }
 
@@ -460,7 +467,7 @@ export class GA4 {
     }
   };
 
-  send = (fieldObject) => {
+  send = (fieldObject: any): void => {
     this._gaCommand("send", fieldObject);
   };
 }

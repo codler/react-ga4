@@ -2,13 +2,21 @@
   "name": "react-ga4",
   "version": "2.1.0",
   "description": "React Google Analytics 4",
-  "main": "dist/index.js",
-  "types": "types/index.d.ts",
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    ".github/FUNDING.yml",
+    "src",
+    "dist"
+  ],
   "scripts": {
-    "build": "NODE_ENV=production babel src -d dist",
-    "postbuild": "tsc src/index.js --declaration --allowJs --emitDeclarationOnly --outDir types",
-    "prepublishOnly": "npm run build && npm test",
-    "test": "NODE_ENV=test jest"
+    "build": "tsdown",
+    "prepublishOnly": "npm run build && npm test -- run",
+    "test": "vitest"
   },
   "author": "Han Lin Yap (https://yap.nu)",
   "license": "MIT",
@@ -24,16 +32,8 @@
     "url": "git+https://github.com/codler/react-ga4.git"
   },
   "devDependencies": {
-    "@babel/cli": "^7.20.7",
-    "@babel/core": "^7.20.12",
-    "@babel/preset-env": "^7.20.2",
-    "babel-jest": "^29.3.1",
-    "jest": "^29.3.1",
-    "typescript": "^4.9.4"
-  },
-  "jest": {
-    "testPathIgnorePatterns": [
-      "dist"
-    ]
+    "tsdown": "0.21.4",
+    "typescript": "5.9.3",
+    "vitest": "4.1.1"
   }
 }

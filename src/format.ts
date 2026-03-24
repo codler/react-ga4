@@ -1,6 +1,6 @@
 const smallWords =
   /^(a|an|and|as|at|but|by|en|for|if|in|nor|of|on|or|per|the|to|vs?\.?|via)$/i;
-function toTitleCase(string) {
+function toTitleCase(string: string): string {
   return string
     .toString()
     .trim()
@@ -27,13 +27,13 @@ function toTitleCase(string) {
 
 // See if s could be an email address. We don't want to send personal data like email.
 // https://support.google.com/analytics/answer/2795983?hl=en
-function mightBeEmail(s) {
+function mightBeEmail(s: string): boolean {
   // There's no point trying to validate rfc822 fully, just look for ...@...
   return typeof s === "string" && s.indexOf("@") !== -1;
 }
 
 const redacted = "REDACTED (Potential Email Address)";
-function redactEmail(string) {
+function redactEmail(string: string): string {
   if (mightBeEmail(string)) {
     console.warn("This arg looks like an email address, redacting.");
 
@@ -44,10 +44,10 @@ function redactEmail(string) {
 }
 
 export default function format(
-  s = "",
-  titleCase = true,
-  redactingEmail = true
-) {
+  s: string = "",
+  titleCase: boolean = true,
+  redactingEmail: boolean = true
+): string {
   let _str = s || "";
 
   if (titleCase) {
