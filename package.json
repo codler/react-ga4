@@ -32,8 +32,8 @@
     "url": "git+https://github.com/codler/react-ga4.git"
   },
   "devDependencies": {
-    "tsdown": "0.21.4",
-    "typescript": "5.9.3",
-    "vitest": "4.1.1"
+    "tsdown": "0.22.14",
+    "typescript": "7.0.2",
+    "vitest": "4.1.11"
   }
 }

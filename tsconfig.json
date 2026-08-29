@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2024",
-    "module": "ESNext",
-    "lib": ["ES2024", "DOM"],
-    "strict": true,
-    "skipLibCheck": true
+    "target": "es2025",
+    "lib": ["ES2025", "DOM"]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+  "include": ["src"]
 }
